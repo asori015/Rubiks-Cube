@@ -4,20 +4,21 @@ using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-    [SerializeField]
-    private Transform boxes;
+    public Transform boxes;
     public static bool isRotating;
     private bool imRotating;
-    [SerializeField]
-    private bool rotateX;
-    [SerializeField]
-    private bool rotateY;
-    [SerializeField]
-    private bool rotateZ;
+    public bool rotateX;
+    public bool rotateY;
+    public bool rotateZ;
+    public float rotationSpeed;
     private float rotationCount;
-    [SerializeField]
-    private float rotationSpeed;
     private bool direction;
+
+    void Start(){
+        // rotateX = false;
+        // rotateY = false;
+        // rotateZ = false;
+    }
 
     void Update(){
         if(imRotating){
@@ -141,5 +142,9 @@ public class Rotate : MonoBehaviour
             i--;
         }
         transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+    }
+
+    public void DickLicker(){
+        Debug.Log("Fuck you");
     }
 }

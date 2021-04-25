@@ -1039,36 +1039,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 63136580}
   m_CullTransparentMesh: 0
---- !u!1 &67028831
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 67028832}
-  m_Layer: 0
-  m_Name: Test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &67028832
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67028831}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &67213195
 GameObject:
   m_ObjectHideFlags: 0
@@ -21777,33 +21747,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f863879ca87cc70439190efc19de89ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotationObjects:
-  - {fileID: 1269348378}
-  - {fileID: 1901580873}
-  - {fileID: 883653259}
-  - {fileID: 1598652359}
-  - {fileID: 855544559}
-  - {fileID: 1560670771}
-  - {fileID: 313344755}
-  - {fileID: 222663612}
-  - {fileID: 560945744}
-  boxes: {fileID: 768967263}
-  fpsDisplay: {fileID: 1363171587}
   rubikSize: 4
-  rubikObject: {fileID: 67028831}
-  rubikBox: {fileID: 6707780314653544000, guid: 8fa1dd7854cf16c469a638fb358b519f,
-    type: 3}
-  rubikColors:
-  - {fileID: 2100000, guid: a8039fa9995633b4885b72c67acaee8a, type: 2}
-  - {fileID: 2100000, guid: 8b3e8cf64bcd08d4aa0800c731d198a1, type: 2}
-  - {fileID: 2100000, guid: 702b4a9c33c5f064f9bb1715bac7f673, type: 2}
-  - {fileID: 2100000, guid: c95a50d5c549c064c98c20c2ee904a20, type: 2}
-  - {fileID: 2100000, guid: 69c3e979f82009b4db965a92381754a0, type: 2}
-  - {fileID: 2100000, guid: eb629c5290af10244929eae2b98b7a96, type: 2}
-  rotationSpeed: 2
-  buttonCanvas: {fileID: 3569760683993593066, guid: 4046455354646e643b4c5bcb86f44e03,
-    type: 3}
-  buttonContainer: {fileID: 3020411368888275137, guid: fb6ca9a464b4b4747a310294547eacc7,
+  rubiksCubePrefab: {fileID: 3953434457492678028, guid: e314bbd60550d634ca77290c1187335c,
     type: 3}
 --- !u!1 &1371565948
 GameObject:

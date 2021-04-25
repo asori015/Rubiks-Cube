@@ -143,8 +143,4 @@ public class Rotate : MonoBehaviour
         }
         transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
     }
-
-    public void DickLicker(){
-        Debug.Log("Fuck you");
-    }
 }

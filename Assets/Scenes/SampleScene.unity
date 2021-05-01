@@ -21747,7 +21747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f863879ca87cc70439190efc19de89ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rubikSize: 4
+  rubikSize: 3
   rubiksCubePrefab: {fileID: 3953434457492678028, guid: e314bbd60550d634ca77290c1187335c,
     type: 3}
 --- !u!1 &1371565948

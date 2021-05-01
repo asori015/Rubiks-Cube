@@ -427,13 +427,13 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 3569760683336940513}
+  - {fileID: 0}
   activatorButtonArray:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 3569760684987775721}
+  - {fileID: 0}
   exitButton: {fileID: 0}
   uiToggle: 1

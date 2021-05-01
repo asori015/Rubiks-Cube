@@ -117,62 +117,75 @@ public class Cube : MonoBehaviour
         return rotateArray;
     }
 
-    void InstantiateCanvases(){
-        var canvases = new GameObject("Canvases");
-        canvases.transform.parent = gameObject.transform;
-        
+    void CreateButton(Transform a3, float curr2, float converter, int i){
+        var button = Instantiate(buttonContainer, a3, false);
+        button.transform.localPosition = new Vector3(0, curr2 * converter, 0);
+        curr2 -= boxSpacing;
+        // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => rotationObjects[i].RotateCubeOrbit(false));
+        button.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(false);});
+    }
+
+    void CreateCanvasHierarchy(GameObject canvasObject){
         //Instantiate canvas prefab
         float canvasPos = (boxSpacing * (rubikSize / 2)) - ((boxSpacing / 2) * ((rubikSize + 1) % 2)) + 0.5f;
-        float converter = 32.258064516129032258064516129032f;
-        var comp = Instantiate(buttonCanvas, new Vector3(0, 0, -canvasPos - 0.005f), Quaternion.identity);
-        comp.transform.SetParent(canvases.transform, false);
+        float converter = 1.0f / 0.031f;
+        var canvas = Instantiate(buttonCanvas, new Vector3(0, 0, -canvasPos - 0.001f), Quaternion.identity, canvasObject.transform);
 
         //resize activator button (child of canvas)
-        var a1 = comp.transform.GetChild(0);
+        var a1 = canvas.transform.Find("Activator Button");
         a1.GetComponent<RectTransform>().sizeDelta = new Vector2(canvasPos * converter * 2, canvasPos * converter * 2);
 
-        comp.transform.GetChild(1).gameObject.SetActive(true);
-
         //resize maintain ui button (child of hidden ui)
-        var a2 = comp.transform.GetChild(1).GetChild(0);
+        // var a2 = canvas.transform.GetChild(1).GetChild(0);
+        canvas.transform.Find("Hidden UI").gameObject.SetActive(true);
+        var a2 = canvas.transform.Find("Hidden UI").Find("Maintain UI Button");
         a2.GetComponent<RectTransform>().sizeDelta = new Vector2((canvasPos + boxSpacing) * converter * 2, (canvasPos + boxSpacing) * converter * 2);
 
         //resize and place button row object
-        var a3 = comp.transform.GetChild(1).GetChild(1);
+        // var a3 = canvas.transform.GetChild(1).GetChild(1);
+        var a3 = canvas.transform.Find("Hidden UI").Find("Row");
         a3.GetComponent<RectTransform>().sizeDelta = new Vector2(converter, canvasPos * converter * 2);
         a3.GetComponent<RectTransform>().localPosition = new Vector3(-(canvasPos - 0.5f + boxSpacing) * converter, 0, 0);
         
         //Instantiate and place button prefabs for *one* row
         float curr2 = canvasPos - 0.5f;
         for(int i = 0; i < rubikSize; i++){
-            var a4 = Instantiate(buttonContainer);
-            a4.transform.SetParent(a3.transform, false);
-            a4.transform.localPosition = new Vector3(0, curr2 * converter, 0);
+            CreateButton(a3, curr2, converter, i);
+            // var a4 = Instantiate(buttonContainer, a3.transform, false);
+            // a4.transform.localPosition = new Vector3(0, curr2 * converter, 0);
             curr2 -= boxSpacing;
-            // var z = rotations.transform.GetChild(i);
-            // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => z.GetComponent<Rotate>().RotateCubeOrbit(false));
+            // // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => rotationObjects[i].RotateCubeOrbit(false));
+            // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(false);});
+            Debug.Log(i);
         }
 
         //Clone row objects
-        var a5 = new GameObject("Temp");
-        a5.transform.SetParent(a2.parent, false);
-        a3.SetParent(a5.transform, false);
-        float w = 90f;
-        for(int i = 0; i < 3; i++){
-            var a6 = Instantiate(a5);
-            a6.transform.SetParent(a2.parent, false);
-            a6.transform.RotateAround(a6.transform.position, transform.forward, w);
-            w += 90f;
-            a6.transform.GetChild(0).transform.SetParent(a2.parent,true);
-            Destroy(a6);
-        }
-        a5.transform.GetChild(0).transform.SetParent(a2.parent, false);
-        Destroy(a5);
+        // var a5 = new GameObject("Temp");
+        // a5.transform.SetParent(a2.parent, false);
+        // a3.SetParent(a5.transform, false);
+        // float w = 90f;
+        // for(int i = 0; i < 3; i++){
+        //     var a6 = Instantiate(a5);
+        //     a6.transform.SetParent(a2.parent, false);
+        //     a6.transform.RotateAround(a6.transform.position, transform.forward, w);
+        //     w += 90f;
+        //     a6.transform.GetChild(0).transform.SetParent(a2.parent,true);
+        //     Destroy(a6);
+        // }
+        // a5.transform.GetChild(0).transform.SetParent(a2.parent, false);
+        // Destroy(a5);
+    }
 
+    void InstantiateCanvases(){
+        var canvases = new GameObject("Canvases");
+        canvases.transform.parent = gameObject.transform;
+
+        CreateCanvasHierarchy(canvases);
+        
         //Clone canvass objects
 
-        var a7 = Instantiate(comp, new Vector3(0,0,0), Quaternion.identity, comp.transform.parent);
-        a7.transform.RotateAround(gameObject.transform.position, transform.up, 90f);
+        // var a7 = Instantiate(comp, new Vector3(0,0,0), Quaternion.identity, comp.transform.parent);
+        // a7.transform.RotateAround(gameObject.transform.position, transform.up, 90f);
     }
 
     //Create a rubik's cube size N x N
@@ -189,74 +202,6 @@ public class Cube : MonoBehaviour
         foreach(Transform child in boxes.transform){
             originalBoxPositions.Add(child.gameObject.GetInstanceID(), child.gameObject.transform.localPosition);
         }
-
-        //
-        //Create Canvas and Button Objects
-        //
-
-        // 6 canvases with preset position and rotation
-        
-
-        // var canvases = new GameObject("Canvases");
-        // canvases.transform.SetParent(rubikObject.transform, false);
-
-        // //Instantiate canvas prefab
-        // var curr1 = (boxSpacing * (n / 2)) - ((boxSpacing / 2) * ((n + 1) % 2)) + 0.5f;
-        // float converter = 32.258064516129032258064516129032f;
-        // var comp = Instantiate(buttonCanvas, new Vector3(0, 0, -curr1 - 0.005f), Quaternion.identity);
-        // comp.transform.SetParent(canvases.transform, false);
-
-        // //resize activator button (child of canvas)
-        // var a1 = comp.transform.GetChild(0);
-        // a1.GetComponent<RectTransform>().sizeDelta = new Vector2(curr1 * converter * 2, curr1 * converter * 2);
-
-        // comp.transform.GetChild(1).gameObject.SetActive(true);
-
-        // //resize maintain ui button (child of hidden ui)
-        // var a2 = comp.transform.GetChild(1).GetChild(0);
-        // a2.GetComponent<RectTransform>().sizeDelta = new Vector2((curr1 + boxSpacing) * converter * 2, (curr1 + boxSpacing) * converter * 2);
-
-        // //resize and place button row object
-        // var a3 = comp.transform.GetChild(1).GetChild(1);
-        // a3.GetComponent<RectTransform>().sizeDelta = new Vector2(converter, curr1 * converter * 2);
-        // a3.GetComponent<RectTransform>().localPosition = new Vector3(-(curr1 - 0.5f + boxSpacing) * converter, 0, 0);
-        
-        // //Instantiate and place button prefabs for *one* row
-        // float curr2 = curr1 - 0.5f;
-        // for(int i = 0; i < n; i++){
-        //     var a4 = Instantiate(buttonContainer);
-        //     a4.transform.SetParent(a3.transform, false);
-        //     a4.transform.localPosition = new Vector3(0, curr2 * converter, 0);
-        //     curr2 -= boxSpacing;
-        //     // var z = rotations.transform.GetChild(i);
-        //     // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => z.GetComponent<Rotate>().RotateCubeOrbit(false));
-        // }
-
-        // //Clone row objects
-        // var a5 = new GameObject("Temp");
-        // a5.transform.SetParent(a2.parent, false);
-        // a3.SetParent(a5.transform, false);
-        // float w = 90f;
-        // for(int i = 0; i < 3; i++){
-        //     var a6 = Instantiate(a5);
-        //     a6.transform.SetParent(a2.parent, false);
-        //     a6.transform.RotateAround(a6.transform.position, transform.forward, w);
-        //     w += 90f;
-        //     a6.transform.GetChild(0).transform.SetParent(a2.parent,true);
-        //     Destroy(a6);
-        // }
-        // a5.transform.GetChild(0).transform.SetParent(a2.parent, false);
-        // Destroy(a5);
-
-        //Clone canvass objects
-
-        // var a7 = Instantiate(comp, new Vector3(0,0,0), Quaternion.identity, comp.transform.parent);
-        // a7.transform.RotateAround(rubikObject.transform.position, transform.up, 90f);
-        
-        
-        //--
-        //set up function calls in buttons
-        //--
     }
 
     public void Scramble(int moves){

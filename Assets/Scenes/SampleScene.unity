@@ -13484,7 +13484,7 @@ GameObject:
   - component: {fileID: 782467795}
   - component: {fileID: 782467794}
   m_Layer: 5
-  m_Name: Exit Button 1
+  m_Name: Exit Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21747,9 +21747,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f863879ca87cc70439190efc19de89ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rubikSize: 3
+  rubikSize: 2
   rubiksCubePrefab: {fileID: 3953434457492678028, guid: e314bbd60550d634ca77290c1187335c,
     type: 3}
+  exitButton: {fileID: 782467792}
 --- !u!1 &1371565948
 GameObject:
   m_ObjectHideFlags: 0

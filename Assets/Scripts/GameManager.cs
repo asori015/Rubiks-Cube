@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     int rubikSize;
     [SerializeField]
     GameObject rubiksCubePrefab;
+    public GameObject exitButton;
     GameObject rubiksCube;
     //Fields for FPS debugging purposes
     // [SerializeField]

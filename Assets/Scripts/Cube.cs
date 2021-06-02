@@ -23,6 +23,12 @@ public class Cube : MonoBehaviour
     private GameObject buttonCanvas;
     [SerializeField]
     private GameObject buttonContainer;
+    [SerializeField]
+    private List<GameObject> activatorButtonList;
+    [SerializeField]
+    private List<GameObject> hiddenUIList;
+    [SerializeField]
+    private GameObject exitButton;
 
     //paint appropriate cube faces
     void PaintCube(int i, int j, int k, Transform x){
@@ -125,67 +131,85 @@ public class Cube : MonoBehaviour
         button.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(false);});
     }
 
-    void CreateCanvasHierarchy(GameObject canvasObject){
-        //Instantiate canvas prefab
-        float canvasPos = (boxSpacing * (rubikSize / 2)) - ((boxSpacing / 2) * ((rubikSize + 1) % 2)) + 0.5f;
-        float converter = 1.0f / 0.031f;
-        var canvas = Instantiate(buttonCanvas, new Vector3(0, 0, -canvasPos - 0.001f), Quaternion.identity, canvasObject.transform);
-
-        //resize activator button (child of canvas)
-        var a1 = canvas.transform.Find("Activator Button");
-        a1.GetComponent<RectTransform>().sizeDelta = new Vector2(canvasPos * converter * 2, canvasPos * converter * 2);
-
-        //resize maintain ui button (child of hidden ui)
-        // var a2 = canvas.transform.GetChild(1).GetChild(0);
-        canvas.transform.Find("Hidden UI").gameObject.SetActive(true);
-        var a2 = canvas.transform.Find("Hidden UI").Find("Maintain UI Button");
-        a2.GetComponent<RectTransform>().sizeDelta = new Vector2((canvasPos + boxSpacing) * converter * 2, (canvasPos + boxSpacing) * converter * 2);
-
-        //resize and place button row object
-        // var a3 = canvas.transform.GetChild(1).GetChild(1);
-        var a3 = canvas.transform.Find("Hidden UI").Find("Row");
-        a3.GetComponent<RectTransform>().sizeDelta = new Vector2(converter, canvasPos * converter * 2);
-        a3.GetComponent<RectTransform>().localPosition = new Vector3(-(canvasPos - 0.5f + boxSpacing) * converter, 0, 0);
+    void CreateRow(Transform hiddenUI, float converter, float canvasPos, Vector3 position, Quaternion orientation){
+        var row = new GameObject("Row", typeof(RectTransform));
+        row.transform.SetParent(hiddenUI);
+        row.GetComponent<RectTransform>().sizeDelta = new Vector2(converter, canvasPos * converter * 2);
+        row.GetComponent<RectTransform>().localPosition = position * -(canvasPos - 0.5f + boxSpacing) * converter;
+        row.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+        row.GetComponent<RectTransform>().localRotation = orientation;
         
         //Instantiate and place button prefabs for *one* row
         float curr2 = canvasPos - 0.5f;
         for(int i = 0; i < rubikSize; i++){
-            CreateButton(a3, curr2, converter, i);
-            // var a4 = Instantiate(buttonContainer, a3.transform, false);
-            // a4.transform.localPosition = new Vector3(0, curr2 * converter, 0);
+            CreateButton(row.transform, curr2, converter, i);
             curr2 -= boxSpacing;
-            // // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => rotationObjects[i].RotateCubeOrbit(false));
-            // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(false);});
             Debug.Log(i);
         }
+    }
 
-        //Clone row objects
-        // var a5 = new GameObject("Temp");
-        // a5.transform.SetParent(a2.parent, false);
-        // a3.SetParent(a5.transform, false);
-        // float w = 90f;
-        // for(int i = 0; i < 3; i++){
-        //     var a6 = Instantiate(a5);
-        //     a6.transform.SetParent(a2.parent, false);
-        //     a6.transform.RotateAround(a6.transform.position, transform.forward, w);
-        //     w += 90f;
-        //     a6.transform.GetChild(0).transform.SetParent(a2.parent,true);
-        //     Destroy(a6);
-        // }
-        // a5.transform.GetChild(0).transform.SetParent(a2.parent, false);
-        // Destroy(a5);
+    void CreateCanvasHierarchy(GameObject canvasObject, Vector3 position, Quaternion orientation){
+        //Instantiate canvas prefab
+        float canvasPos = (boxSpacing * (rubikSize / 2)) - ((boxSpacing / 2) * ((rubikSize + 1) % 2)) + 0.5f;
+        float converter = 1.0f / 0.031f;
+        var canvas = Instantiate(buttonCanvas, position * (canvasPos + 0.001f), orientation, canvasObject.transform);
+
+        //resize activator button (child of canvas)
+        var activatorButton = canvas.transform.Find("Activator Button");
+        activatorButton.GetComponent<RectTransform>().sizeDelta = new Vector2(canvasPos * converter * 2, canvasPos * converter * 2);
+
+        //Add canvas children to reference lists
+        activatorButtonList.Add(activatorButton.gameObject);
+        hiddenUIList.Add(canvas.transform.Find("Hidden UI").gameObject);
+
+        //resize maintain ui button (child of hidden ui)
+        // canvas.transform.Find("Hidden UI").gameObject.SetActive(true);
+        var maintainButton = canvas.transform.Find("Hidden UI").Find("Maintain UI Button");
+        maintainButton.GetComponent<RectTransform>().sizeDelta = new Vector2((canvasPos + boxSpacing) * converter * 2, (canvasPos + boxSpacing) * converter * 2);
+
+        //resize and place button row object
+        CreateRow(canvas.transform.Find("Hidden UI"), converter, canvasPos, new Vector3(1,0,0), Quaternion.Euler(0,0,0));
+        CreateRow(canvas.transform.Find("Hidden UI"), converter, canvasPos, new Vector3(0,1,0), Quaternion.Euler(0,0,90));
+        CreateRow(canvas.transform.Find("Hidden UI"), converter, canvasPos, new Vector3(-1,0,0), Quaternion.Euler(0,0,180));
+        CreateRow(canvas.transform.Find("Hidden UI"), converter, canvasPos, new Vector3(0,-1,0), Quaternion.Euler(0,0,270));
+    }
+
+    //set up all activator button links to other activator buttons
+    void SetupActivators(){
+        UIToggle toggleComponent;
+        foreach(var activator in activatorButtonList){
+            toggleComponent = activator.GetComponent<UIToggle>();
+            toggleComponent.setActivatorButtonArray(activatorButtonList.ToArray());
+            toggleComponent.setHiddenUIArray(hiddenUIList.ToArray());
+            toggleComponent.setExitButton(exitButton);
+        }
+        
+        toggleComponent = exitButton.GetComponent<UIToggle>();
+        toggleComponent.setActivatorButtonArray(activatorButtonList.ToArray());
+        toggleComponent.setHiddenUIArray(hiddenUIList.ToArray());
+        toggleComponent.setExitButton(exitButton);
+    }
+
+    //set up all button links to rotations
+    void SetupButtons(){
+        ;
     }
 
     void InstantiateCanvases(){
         var canvases = new GameObject("Canvases");
         canvases.transform.parent = gameObject.transform;
 
-        CreateCanvasHierarchy(canvases);
-        
-        //Clone canvass objects
+        exitButton = GameObject.Find("Camera Rotator").transform.Find("Canvas").transform.Find("Exit Button").gameObject;
 
-        // var a7 = Instantiate(comp, new Vector3(0,0,0), Quaternion.identity, comp.transform.parent);
-        // a7.transform.RotateAround(gameObject.transform.position, transform.up, 90f);
+        CreateCanvasHierarchy(canvases, new Vector3(0,0,-1), Quaternion.Euler(0,0,0));
+        CreateCanvasHierarchy(canvases, new Vector3(-1,0,0), Quaternion.Euler(0,90,0));
+        CreateCanvasHierarchy(canvases, new Vector3(0,0,1), Quaternion.Euler(0,180,0));
+        CreateCanvasHierarchy(canvases, new Vector3(1,0,0), Quaternion.Euler(0,270,0));
+        CreateCanvasHierarchy(canvases, new Vector3(0,1,0), Quaternion.Euler(90,0,0));
+        CreateCanvasHierarchy(canvases, new Vector3(0,-1,0), Quaternion.Euler(-90,0,0));
+
+        SetupActivators(); //Activator buttons need script set up
+        SetupButtons(); //Buttons need to be assigned event handlers
     }
 
     //Create a rubik's cube size N x N

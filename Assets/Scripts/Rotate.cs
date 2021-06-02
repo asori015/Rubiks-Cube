@@ -57,7 +57,6 @@ public class Rotate : MonoBehaviour
 
     //'direction' in this context means clockwise or counter-clockwise
     public void RotateCubeOrbit(bool direction){
-        Debug.Log(transform.name);
         //do not enter when in mid-rotation
         if(isRotating){
             return;

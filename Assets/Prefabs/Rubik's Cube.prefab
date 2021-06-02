@@ -60,3 +60,6 @@ MonoBehaviour:
     type: 3}
   buttonContainer: {fileID: 3020411368888275137, guid: fb6ca9a464b4b4747a310294547eacc7,
     type: 3}
+  activatorButtonList: []
+  hiddenUIList: []
+  exitButton: {fileID: 0}

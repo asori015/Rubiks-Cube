@@ -1,25 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
-    private Rotate[] rotationObjects;
+    int rubikSize;
     [SerializeField]
-    private GameObject boxes;
-    private Dictionary<string, Vector3> savedNames;
-    [SerializeField]
-    private TMPro.TextMeshProUGUI fpsDisplay;
-    private int frameCounter;
-    private float timeCounter;
+    GameObject rubiksCubePrefab;
+    public GameObject exitButton;
+    GameObject rubiksCube;
+    //Fields for FPS debugging purposes
+    // [SerializeField]
+    // private TMPro.TextMeshProUGUI fpsDisplay;
+    // private int frameCounter;
+    // private float timeCounter;
 
     void Start(){
         Application.targetFrameRate = 60;
-        savedNames = new Dictionary<string, Vector3>();
-        foreach(Transform child in boxes.transform){
-            savedNames.Add(child.gameObject.name, child.gameObject.transform.localPosition);
-        }
+        rubiksCube = Instantiate(rubiksCubePrefab);
+        rubiksCube.GetComponent<Cube>().CreateCube(rubikSize);
     }
 
     void Update()
@@ -40,29 +41,10 @@ public class GameManager : MonoBehaviour
     }
 
     public void Scramble(int moves){
-        if(Rotate.isRotating){
-            return;
-        }
-
-        for(int i = 0; i < moves; i++){
-            int randInt = Random.Range(0,17);
-            if(randInt % 2 == 1){
-                rotationObjects[randInt / 2].RotateCubeOrbitFast(true);
-            }
-            else{
-                rotationObjects[randInt / 2].RotateCubeOrbitFast(false);
-            }
-        }
+        rubiksCube.GetComponent<Cube>().Scramble(moves);
     }
 
     public void Reset(){
-        if(Rotate.isRotating){
-            return;
-        }
-
-        foreach(Transform child in boxes.transform){
-            child.localPosition = savedNames[child.gameObject.name];
-            child.localRotation = Quaternion.Euler(0f,0f,0f);
-        }
+        rubiksCube.GetComponent<Cube>().Reset();
     }
 }

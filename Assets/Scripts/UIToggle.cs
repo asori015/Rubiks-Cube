@@ -14,6 +14,18 @@ public class UIToggle : MonoBehaviour, IPointerEnterHandler
     private GameObject exitButton;
     [SerializeField]
     private bool uiToggle;
+    
+    public void setHiddenUIArray(GameObject[] hiddenUIs){
+        hiddenUIArray = hiddenUIs;
+    }
+
+    public void setActivatorButtonArray(GameObject[] activators){
+        activatorButtonArray = activators;
+    }
+
+    public void setExitButton(GameObject exit){
+        exitButton = exit;
+    }
 
     public void OnPointerEnter(PointerEventData eventData)
     {

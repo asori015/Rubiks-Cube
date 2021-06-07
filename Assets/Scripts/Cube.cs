@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -123,12 +125,42 @@ public class Cube : MonoBehaviour
         return rotateArray;
     }
 
-    void CreateButton(Transform a3, float curr2, float converter, int i){
-        var button = Instantiate(buttonContainer, a3, false);
-        button.transform.localPosition = new Vector3(0, curr2 * converter, 0);
-        curr2 -= boxSpacing;
-        // a4.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => rotationObjects[i].RotateCubeOrbit(false));
-        button.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(false);});
+    GameObject CreateButton(Transform row, float buttonPosition, float converter){
+        var button = Instantiate(buttonContainer, row, false);
+        button.transform.localPosition = new Vector3(0, buttonPosition * converter, 0);
+        return button;
+    }
+
+    bool isOnTheLeft(float a, float b){
+        if(a > 0){
+            if((b > 0 && a > b) || (b < 0 && Mathf.Abs(b) > a)){
+                return true;
+            }
+        }
+        else{
+            if((b > 0 && Mathf.Abs(a) < b) || (b < 0 && a < b)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void SetupButton(GameObject buttonContainer){
+        var w = buttonContainer.transform.position;
+        var b = (boxSpacing * (rubikSize / 2)) - ((boxSpacing / 2) * ((rubikSize + 1) % 2));
+        if(Mathf.Abs(w.x) <= b){
+            var i = Mathf.RoundToInt((-w.x + b) / boxSpacing);
+            buttonContainer.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(isOnTheLeft(w.y, w.z));});
+        }
+        else if(Mathf.Abs(w.y) <= b){
+            var i = Mathf.RoundToInt((-w.y + b) / boxSpacing) + rubikSize;
+            buttonContainer.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(isOnTheLeft(w.z, w.x));});
+        }
+        else{
+            var i = Mathf.RoundToInt((-w.z + b) / boxSpacing) + rubikSize * 2;
+            buttonContainer.transform.Find("Button").GetComponent<Button>().onClick.AddListener(delegate {rotationObjects[i].RotateCubeOrbit(isOnTheLeft(w.x, w.y));});
+        }
+        
     }
 
     void CreateRow(Transform hiddenUI, float converter, float canvasPos, Vector3 position, Quaternion orientation){
@@ -140,11 +172,13 @@ public class Cube : MonoBehaviour
         row.GetComponent<RectTransform>().localRotation = orientation;
         
         //Instantiate and place button prefabs for *one* row
-        float curr2 = canvasPos - 0.5f;
+        float buttonPosition = canvasPos - 0.5f;
+        var rectPosition = row.GetComponent<RectTransform>().position;
+
         for(int i = 0; i < rubikSize; i++){
-            CreateButton(row.transform, curr2, converter, i);
-            curr2 -= boxSpacing;
-            Debug.Log(i);
+            var x = CreateButton(row.transform, buttonPosition, converter);
+            SetupButton(x);
+            buttonPosition -= boxSpacing;
         }
     }
 
@@ -183,16 +217,11 @@ public class Cube : MonoBehaviour
             toggleComponent.setHiddenUIArray(hiddenUIList.ToArray());
             toggleComponent.setExitButton(exitButton);
         }
-        
+
         toggleComponent = exitButton.GetComponent<UIToggle>();
         toggleComponent.setActivatorButtonArray(activatorButtonList.ToArray());
         toggleComponent.setHiddenUIArray(hiddenUIList.ToArray());
         toggleComponent.setExitButton(exitButton);
-    }
-
-    //set up all button links to rotations
-    void SetupButtons(){
-        ;
     }
 
     void InstantiateCanvases(){
@@ -209,7 +238,6 @@ public class Cube : MonoBehaviour
         CreateCanvasHierarchy(canvases, new Vector3(0,-1,0), Quaternion.Euler(-90,0,0));
 
         SetupActivators(); //Activator buttons need script set up
-        SetupButtons(); //Buttons need to be assigned event handlers
     }
 
     //Create a rubik's cube size N x N
@@ -234,7 +262,7 @@ public class Cube : MonoBehaviour
         }
 
         for(int i = 0; i < moves; i++){
-            int randInt = Random.Range(0, rubikSize * 6);
+            int randInt = UnityEngine.Random.Range(0, rubikSize * 6);
             if(randInt % 2 == 1){
                 rotationObjects[randInt / 2].RotateCubeOrbitFast(true);
             }
